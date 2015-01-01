@@ -7,3 +7,5 @@ Author: Boyang Zhao
 Maintainer: Boyang Zhao <bozhao@mit.edu>
 Description: Plots mutation data
 License: GNU GPLv2
+Suggests: RCurl, XML, biomaRt
+

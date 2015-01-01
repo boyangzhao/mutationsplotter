@@ -4,18 +4,21 @@
 \alias{plotMutations}
 \title{Plot mutations}
 \usage{
-plotMutations(x, y, protLen, annotatePos = c(), annotateSymbol = "*")
+plotMutations(x, y, UniProtID = NA, protLen = NA, annotatePos = c(),
+  annotateSymbol = "*", annotateProt = NA)
 }
 \arguments{
 \item{x}{list of mutation positions}
 
 \item{y}{list of mutation counts for each corresponding position mutated}
 
-\item{protLen}{protein length}
+\item{protLen}{protein length; can be from retrieveProtLen}
 
 \item{annotatePos}{positions to annotate, default empty list}
 
 \item{annotateSymbol}{symbol to use for annotation, default *}
+
+\item{annotateProt}{protein annotations, e.g. conserved domains; can be from retrieveDomains}
 }
 \value{
 plots
