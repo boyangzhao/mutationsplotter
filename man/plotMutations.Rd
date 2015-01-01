@@ -5,7 +5,7 @@
 \title{Plot mutations}
 \usage{
 plotMutations(x, y, UniProtID = NA, protLen = NA, annotatePos = c(),
-  annotateSymbol = "*", annotateProt = NA)
+  annotateSymbol = "*", annotateProt = c())
 }
 \arguments{
 \item{x}{list of mutation positions}

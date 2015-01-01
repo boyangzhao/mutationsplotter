@@ -14,7 +14,7 @@ retrieveProtLen <- function(UniProtID){
   idx <- idx[1]
   
   #remove \n's
-  seq <- substr(a,idx[1]+1,nchar(a))
+  seq <- substr(fasta.data,idx[1]+1,nchar(fasta.data))
   seq <- gsub("\\\n","",seq)
   
   #calculate protein length
