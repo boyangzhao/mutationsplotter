@@ -23,13 +23,16 @@ plotMutations <- function(x, y,
   barcol <- rgb(100,100,100,255,maxColorValue=255)
   baranotcol <- rgb(0,130,5,255,maxColorValue=255)
   
-  #initialize protLen
   #quality controls
   if(length(protLen) > 1){
     warning("protLen should not be a vector, will only take the first element")
     protLen <- protLen[1]
   }
+  if(nchar(UniProtID) < 1){
+    UniProtID <- NA
+  }
   
+  #initialize protLen
   if(is.na(protLen)){
     if(!is.na(UniProtID)){
       #retrieve protein length if gene name (UniProtID) is provided and protein length undefined
@@ -50,23 +53,29 @@ plotMutations <- function(x, y,
     annotateProt <- retrieveDomains(UniProtID)
   }
   
+  #derive additional parameter values
+  geneSymbol <- ""
+  if(!is.na(UniProtID)){
+    geneSymbol <- convertID_UniProt2HGNC(UniProtID)
+  }
+  
   #derive plot parameters
   ymax <- ceiling((max(y)/10))*10
   ymin <- 0 #lowest point of y, with tickmarks
-  protheight <- (ymax+1)*0.1
+  protheight <- ymax*0.09
   protheightAdd <- (protheight*0.18)
   ylower <- -(protheight+protheightAdd) #lower point of y, without tickmarks
   
   #initialize plot
-  plot(0,0, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax+1), ylab="Number of Mutations", xlab="Amino acid", 
-       cex=0,frame.plot=FALSE)
+  plot(0,0, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), ylab="Number of Mutations", xlab="Amino acid", 
+       cex=0,frame.plot=FALSE,main=geneSymbol)
   
   #plot mutations
   for(idx in 1:length(x)){
     segments(x[idx],0,x[idx],y[idx], col=stemcol) #plot stems
   }
   par(new=TRUE)
-  plot(x, y, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax+1), ylab="Number of Mutations", xlab="Amino acid", 
+  plot(x, y, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), ylab="Number of Mutations", xlab="Amino acid", 
        cex=2, bg=mutcol, col=mutcolborder, pch=21, frame.plot=FALSE)
   
   axis(1)
