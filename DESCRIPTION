@@ -1,7 +1,7 @@
 Package: mutationsplotter
 Type: Package
 Title: Plots mutation data
-Version: 1.0
+Version: 0.1
 Date: 2015-01-01
 Author: Boyang Zhao
 Maintainer: Boyang Zhao <bozhao@mit.edu>

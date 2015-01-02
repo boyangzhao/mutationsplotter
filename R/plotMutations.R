@@ -50,8 +50,15 @@ plotMutations <- function(x, y,
     annotateProt <- retrieveDomains(UniProtID)
   }
   
+  #derive plot parameters
+  ymax <- ceiling((max(y)/10))*10
+  ymin <- 0 #lowest point of y, with tickmarks
+  protheight <- (ymax+1)*0.1
+  protheightAdd <- (protheight*0.18)
+  ylower <- -(protheight+protheightAdd) #lower point of y, without tickmarks
+  
   #initialize plot
-  plot(0,0, xlim=c(0,protLen), ylim=c(-0.4,max(y)+1), ylab="Number of Mutations", xlab="Amino acid", 
+  plot(0,0, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax+1), ylab="Number of Mutations", xlab="Amino acid", 
        cex=0,frame.plot=FALSE)
   
   #plot mutations
@@ -59,13 +66,16 @@ plotMutations <- function(x, y,
     segments(x[idx],0,x[idx],y[idx], col=stemcol) #plot stems
   }
   par(new=TRUE)
-  plot(x, y, xlim=c(0,protLen), ylim=c(-0.4,max(y)+1), ylab="Number of Mutations", xlab="Amino acid", 
+  plot(x, y, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax+1), ylab="Number of Mutations", xlab="Amino acid", 
        cex=2, bg=mutcol, col=mutcolborder, pch=21, frame.plot=FALSE)
+  
+  axis(1)
+  
+  axis(2, at=seq(ymin, ymax, by=floor((ymax-ymin)/5)))
   
   #annotate positions
   if(!is.null(annotatePos)){
-    y.max <- max(y)
-    y.increment <- y.max*0.15
+    y.increment <- ymax*0.15
     for(idx in 1:length(annotatePos)){
       if(annotatePos[idx] %in% x){
         y.indx <- match(annotatePos[idx], x)
@@ -75,17 +85,17 @@ plotMutations <- function(x, y,
   }
   
   #plot protein
-  rect(0,-0.4,protLen,0,col=barcol,border=barcol)
+  rect(0,-protheight,protLen,0,col=barcol,border=barcol)
   
   #annotate protein
   if(!is.null(annotateProt)){
     for(idx in 1:nrow(annotateProt)){
       posMiddle <- floor((as.numeric(annotateProt$end[idx])-as.numeric(annotateProt$start[idx]))/2)
       posMiddle <- as.numeric(annotateProt$start[idx]) + posMiddle
-      rect(annotateProt$start[idx],-0.5,
-           annotateProt$end[idx],0.1,
+      rect(annotateProt$start[idx],-(protheight+protheightAdd),
+           annotateProt$end[idx], protheightAdd,
            col=baranotcol,border=baranotcol)
-      text(posMiddle, -0.20, adj=0.5,
+      text(posMiddle, -((protheight+protheightAdd)/2.1), adj=0.5,
            labels=annotateProt$pfamName[idx], cex=0.75)
     }
   }
