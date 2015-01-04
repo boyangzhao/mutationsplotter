@@ -7,6 +7,11 @@
 #' @param annotatePos positions to annotate, default empty list
 #' @param annotateSymbol symbol to use for annotation, default *
 #' @param annotateProt protein annotations, e.g. conserved domains; can be from retrieveDomains
+#' @param xaxis Boolean to turn on/off x-axis
+#' @param yaxis Boolean to turn on/off y-axis
+#' @param xlab x-axis label, default = "Amino acid", only show if xaxis = TRUE
+#' @param ylab y-axis label, default = "Number of Mutations", only show if yaxis = TRUE
+#' @param main title, value '[gene]' will be replaced by actual gene name (queried using given UniProtID)
 #' @return plots
 #' @export
 #' 
@@ -14,7 +19,10 @@ plotMutations <- function(x, y,
                           UniProtID = NA,
                           protLen = NA,
                           annotatePos = c(), annotateSymbol = "*",
-                          annotateProt = c()){
+                          annotateProt = c(),
+                          xaxis = TRUE, yaxis = TRUE,
+                          xlab = "Amino acid", ylab = "Number of Mutations",
+                          main = "[gene]"){
   
   #default colors
   mutcol <- rgb(180,0,14,220,maxColorValue=255)
@@ -55,8 +63,10 @@ plotMutations <- function(x, y,
   
   #derive additional parameter values
   geneSymbol <- ""
+  titleName <- ""
   if(!is.na(UniProtID)){
     geneSymbol <- convertID_UniProt2HGNC(UniProtID)
+    titleName <- gsub("\\[gene\\]", geneSymbol, main)
   }
   
   #derive plot parameters
@@ -64,24 +74,31 @@ plotMutations <- function(x, y,
   ymin <- 0 #lowest point of y, with tickmarks
   protheight <- ymax*0.09
   protheightAdd <- (protheight*0.18)
+  #protheightAdd <- 0
   ylower <- -(protheight+protheightAdd) #lower point of y, without tickmarks
   
   #initialize plot
-  plot(0,0, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), ylab="Number of Mutations", xlab="Amino acid", 
-       cex=0,frame.plot=FALSE,main=geneSymbol)
+  plot(0,0, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), xlab="", ylab="",
+       cex=0, frame.plot=FALSE, main=titleName)
   
   #plot mutations
   for(idx in 1:length(x)){
     segments(x[idx],0,x[idx],y[idx], col=stemcol) #plot stems
   }
   par(new=TRUE)
-  plot(x, y, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), ylab="Number of Mutations", xlab="Amino acid", 
+  plot(x, y, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), xlab="", ylab="",
        cex=2, bg=mutcol, col=mutcolborder, pch=21, frame.plot=FALSE)
   
-  axis(1)
+  if(xaxis){
+    axis(1)
+    title(xlab=xlab)
+  }
   
-  axis(2, at=seq(ymin, ymax, by=floor((ymax-ymin)/5)))
-  
+  if(yaxis){
+    axis(2, at=seq(ymin, ymax, by=floor((ymax-ymin)/5)))
+    title(ylab=ylab)
+  }
+    
   #annotate positions
   if(!is.null(annotatePos)){
     y.increment <- ymax*0.15
