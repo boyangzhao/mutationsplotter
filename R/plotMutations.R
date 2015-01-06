@@ -6,6 +6,7 @@
 #' @param protLen protein length; can be from retrieveProtLen
 #' @param annotatePos positions to annotate, default empty list
 #' @param annotateSymbol symbol to use for annotation, default *
+#' @param annotateCex size of annotation symbol, default 2
 #' @param annotateProt protein annotations, e.g. conserved domains; can be from retrieveDomains
 #' @param xaxis Boolean to turn on/off x-axis
 #' @param yaxis Boolean to turn on/off y-axis
@@ -18,7 +19,7 @@
 plotMutations <- function(x, y, 
                           UniProtID = NA,
                           protLen = NA,
-                          annotatePos = c(), annotateSymbol = "*",
+                          annotatePos = c(), annotateSymbol = "*", annotateCex = 2,
                           annotateProt = c(),
                           xaxis = TRUE, yaxis = TRUE,
                           xlab = "Amino acid", ylab = "Number of Mutations",
@@ -87,7 +88,7 @@ plotMutations <- function(x, y,
   }
   par(new=TRUE)
   plot(x, y, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), xlab="", ylab="",
-       cex=2, bg=mutcol, col=mutcolborder, pch=21, frame.plot=FALSE)
+       cex=annotateCex, bg=mutcol, col=mutcolborder, pch=21, frame.plot=FALSE)
   
   if(xaxis){
     axis(1)

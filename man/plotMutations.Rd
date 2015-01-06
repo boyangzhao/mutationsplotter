@@ -5,8 +5,9 @@
 \title{Plot mutations}
 \usage{
 plotMutations(x, y, UniProtID = NA, protLen = NA, annotatePos = c(),
-  annotateSymbol = "*", annotateProt = c(), xaxis = TRUE, yaxis = TRUE,
-  xlab = "Amino acid", ylab = "Number of Mutations", main = "[gene]")
+  annotateSymbol = "*", annotateCex = 2, annotateProt = c(),
+  xaxis = TRUE, yaxis = TRUE, xlab = "Amino acid",
+  ylab = "Number of Mutations", main = "[gene]")
 }
 \arguments{
 \item{x}{list of mutation positions}
@@ -18,6 +19,8 @@ plotMutations(x, y, UniProtID = NA, protLen = NA, annotatePos = c(),
 \item{annotatePos}{positions to annotate, default empty list}
 
 \item{annotateSymbol}{symbol to use for annotation, default *}
+
+\item{annotateCex}{size of annotation symbol, default 2}
 
 \item{annotateProt}{protein annotations, e.g. conserved domains; can be from retrieveDomains}
 
