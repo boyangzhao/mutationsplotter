@@ -142,7 +142,7 @@ plotMutations <- function(x, y,
     if(!is.null(annotateCol)){
       #if annotateCol is not null, will have to split data into annotated versus non-annotated
       mutcol <- rep(mutcol.default, length(x))
-      mutcol[x==annotatePos] <- annotateCol
+      mutcol[x %in% annotatePos] <- annotateCol
     }
   }
   
