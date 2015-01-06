@@ -3,31 +3,36 @@
 #' Plots mutations given mutation data, and matched
 #' @param x list of mutation positions
 #' @param y list of mutation counts for each corresponding position mutated
-#' @param protLen protein length; can be from retrieveProtLen
 #' @param annotatePos positions to annotate, default empty list
 #' @param annotateSymbol symbol to use for annotation, default *
-#' @param annotateCex size of annotation symbol, default 2
+#' @param annotateCol color to use for annotated positionn; NULL = no difference in coloring; 'default' = default color; or specify color (using rgb function)
+#' @param protLen protein length; can be from retrieveProtLen
 #' @param annotateProt protein annotations, e.g. conserved domains; can be from retrieveDomains
 #' @param xaxis Boolean to turn on/off x-axis
 #' @param yaxis Boolean to turn on/off y-axis
 #' @param xlab x-axis label, default = "Amino acid", only show if xaxis = TRUE
 #' @param ylab y-axis label, default = "Number of Mutations", only show if yaxis = TRUE
 #' @param main title, value '[gene]' will be replaced by actual gene name (queried using given UniProtID)
+#' @param cex size of annotation symbol, default 1.5
 #' @return plots
 #' @export
 #' 
-plotMutations <- function(x, y, 
+plotMutations <- function(x, y,
                           UniProtID = NA,
+                          annotatePos = NULL,
+                          annotateSymbol = "*",
+                          annotateCol = NULL,
                           protLen = NA,
-                          annotatePos = c(), annotateSymbol = "*", annotateCex = 2,
                           annotateProt = c(),
                           xaxis = TRUE, yaxis = TRUE,
                           xlab = "Amino acid", ylab = "Number of Mutations",
-                          main = "[gene]"){
+                          main = "[gene]", cex = 2){
   
   #default colors
-  mutcol <- rgb(180,0,14,220,maxColorValue=255)
+  mutcol.default <- rgb(180,0,14,220,maxColorValue=255)
+  mutcol <- mutcol.default #mutcol can be a vector, if so, it has to match in length to that in x and y
   mutcolborder <- rgb(100,0,5,255,maxColorValue=255)
+  annotcol.default <- rgb(0,120,140,220,maxColorValue=255)
   stemcol <- rgb(150,150,150,255,maxColorValue=255)
   barcol <- rgb(100,100,100,255,maxColorValue=255)
   baranotcol <- rgb(0,130,5,255,maxColorValue=255)
@@ -40,6 +45,17 @@ plotMutations <- function(x, y,
   if(nchar(UniProtID) < 1){
     UniProtID <- NA
   }
+  if(!is.null(annotatePos)){
+    annotCheck <- !(annotatePos %in% x)
+    if(sum(annotCheck) > 0){
+      warning("Some positions to be annotated are not in given data x, will be ignoring these...")
+      annotatePos <- annotatePos[annotatePos %in% x]
+      if(length(annotatePos) < 1){
+        warning("No feasible positions to annotate...")
+        annotatePos <- NULL
+      }
+    }
+  }  
   
   #initialize protLen
   if(is.na(protLen)){
@@ -69,6 +85,9 @@ plotMutations <- function(x, y,
     geneSymbol <- convertID_UniProt2HGNC(UniProtID)
     titleName <- gsub("\\[gene\\]", geneSymbol, main)
   }
+  if(!is.null(annotateCol) && annotateCol == 'default'){
+    annotateCol <- annotcol.default
+  }
   
   #derive plot parameters
   ymax <- ceiling((max(y)/10))*10
@@ -81,15 +100,7 @@ plotMutations <- function(x, y,
   #initialize plot
   plot(0,0, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), xlab="", ylab="",
        cex=0, frame.plot=FALSE, main=titleName)
-  
-  #plot mutations
-  for(idx in 1:length(x)){
-    segments(x[idx],0,x[idx],y[idx], col=stemcol) #plot stems
-  }
-  par(new=TRUE)
-  plot(x, y, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), xlab="", ylab="",
-       cex=annotateCex, bg=mutcol, col=mutcolborder, pch=21, frame.plot=FALSE)
-  
+
   if(xaxis){
     axis(1)
     title(xlab=xlab)
@@ -99,15 +110,44 @@ plotMutations <- function(x, y,
     axis(2, at=seq(ymin, ymax, by=floor((ymax-ymin)/5)))
     title(ylab=ylab)
   }
-    
+  
   #annotate positions
   if(!is.null(annotatePos)){
-    y.increment <- ymax*0.15
-    for(idx in 1:length(annotatePos)){
-      if(annotatePos[idx] %in% x){
-        y.indx <- match(annotatePos[idx], x)
-        text(annotatePos[idx]-0.1, y[y.indx]+y.increment, labels=annotateSymbol, cex=2)
+    if(!is.null(annotateSymbol)){
+      y.increment <- ymax*0.15
+      for(idx in 1:length(annotatePos)){
+        if(annotatePos[idx] %in% x){
+          y.indx <- match(annotatePos[idx], x)
+          text(annotatePos[idx]-0.1, y[y.indx]+y.increment, labels=annotateSymbol, cex=2)
+        }
       }
+    }
+    
+    if(!is.null(annotateCol)){
+      #if annotateCol is not null, will have to split data into annotated versus non-annotated
+      mutcol <- rep(mutcol.default, length(x))
+      mutcol[x==annotatePos] <- annotateCol
+    }
+  }
+  
+  #plot mutations
+  for(idx in 1:length(x)){
+    segments(x[idx],0,x[idx],y[idx], col=stemcol) #plot stems
+  }
+  
+  if(length(mutcol) > 2 && length(mutcol) != length(x)){
+    #length of mutcol vector does not match the length of data, will default to a single color scheme
+    mutcol <- mutcol.default
+  }
+  if(length(mutcol) < 2){
+    par(new=TRUE)
+    plot(x, y, xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), xlab="", ylab="",
+         cex=cex, bg=mutcol, col=mutcolborder, pch=21, frame.plot=FALSE)
+  } else {
+    for(idx in 1:length(x)){
+      par(new=TRUE)
+      plot(x[idx], y[idx], xlim=c(0,protLen), axes=FALSE, ylim=c(ylower,ymax), xlab="", ylab="",
+           cex=cex, bg=mutcol[idx], col=mutcolborder, pch=21, frame.plot=FALSE)
     }
   }
   

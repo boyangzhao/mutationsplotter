@@ -4,23 +4,23 @@
 \alias{plotMutations}
 \title{Plot mutations}
 \usage{
-plotMutations(x, y, UniProtID = NA, protLen = NA, annotatePos = c(),
-  annotateSymbol = "*", annotateCex = 2, annotateProt = c(),
-  xaxis = TRUE, yaxis = TRUE, xlab = "Amino acid",
-  ylab = "Number of Mutations", main = "[gene]")
+plotMutations(x, y, UniProtID = NA, annotatePos = NULL,
+  annotateSymbol = "*", annotateCol = NULL, protLen = NA,
+  annotateProt = c(), xaxis = TRUE, yaxis = TRUE, xlab = "Amino acid",
+  ylab = "Number of Mutations", main = "[gene]", cex = 2)
 }
 \arguments{
 \item{x}{list of mutation positions}
 
 \item{y}{list of mutation counts for each corresponding position mutated}
 
-\item{protLen}{protein length; can be from retrieveProtLen}
-
 \item{annotatePos}{positions to annotate, default empty list}
 
 \item{annotateSymbol}{symbol to use for annotation, default *}
 
-\item{annotateCex}{size of annotation symbol, default 2}
+\item{annotateCol}{color to use for annotated positionn; NULL = no difference in coloring; 'default' = default color; or specify color (using rgb function)}
+
+\item{protLen}{protein length; can be from retrieveProtLen}
 
 \item{annotateProt}{protein annotations, e.g. conserved domains; can be from retrieveDomains}
 
@@ -33,6 +33,8 @@ plotMutations(x, y, UniProtID = NA, protLen = NA, annotatePos = c(),
 \item{ylab}{y-axis label, default = "Number of Mutations", only show if yaxis = TRUE}
 
 \item{main}{title, value '[gene]' will be replaced by actual gene name (queried using given UniProtID)}
+
+\item{cex}{size of annotation symbol, default 1.5}
 }
 \value{
 plots
