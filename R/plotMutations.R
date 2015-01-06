@@ -31,7 +31,7 @@ plotMutations <- function(x, y,
   #default colors
   mutcol.default <- rgb(180,0,14,220,maxColorValue=255)
   mutcol <- mutcol.default #mutcol can be a vector, if so, it has to match in length to that in x and y
-  mutcolborder <- rgb(100,0,5,255,maxColorValue=255)
+  mutcolborder <- rgb(0,0,0,255,maxColorValue=255)
   annotcol.default <- rgb(0,120,140,220,maxColorValue=255)
   stemcol <- rgb(150,150,150,255,maxColorValue=255)
   barcol <- rgb(100,100,100,255,maxColorValue=255)
@@ -111,6 +111,22 @@ plotMutations <- function(x, y,
     title(ylab=ylab)
   }
   
+  #plot protein
+  rect(0,-protheight,protLen,0,col=barcol,border=barcol)
+  
+  #annotate protein
+  if(!is.null(annotateProt)){
+    for(idx in 1:nrow(annotateProt)){
+      posMiddle <- floor((as.numeric(annotateProt$end[idx])-as.numeric(annotateProt$start[idx]))/2)
+      posMiddle <- as.numeric(annotateProt$start[idx]) + posMiddle
+      rect(annotateProt$start[idx],-(protheight+protheightAdd),
+           annotateProt$end[idx], protheightAdd,
+           col=baranotcol,border=baranotcol)
+      text(posMiddle, -((protheight+protheightAdd)/2.1), adj=0.5,
+           labels=annotateProt$pfamName[idx], cex=0.75)
+    }
+  }
+  
   #annotate positions
   if(!is.null(annotatePos)){
     if(!is.null(annotateSymbol)){
@@ -151,19 +167,4 @@ plotMutations <- function(x, y,
     }
   }
   
-  #plot protein
-  rect(0,-protheight,protLen,0,col=barcol,border=barcol)
-  
-  #annotate protein
-  if(!is.null(annotateProt)){
-    for(idx in 1:nrow(annotateProt)){
-      posMiddle <- floor((as.numeric(annotateProt$end[idx])-as.numeric(annotateProt$start[idx]))/2)
-      posMiddle <- as.numeric(annotateProt$start[idx]) + posMiddle
-      rect(annotateProt$start[idx],-(protheight+protheightAdd),
-           annotateProt$end[idx], protheightAdd,
-           col=baranotcol,border=baranotcol)
-      text(posMiddle, -((protheight+protheightAdd)/2.1), adj=0.5,
-           labels=annotateProt$pfamName[idx], cex=0.75)
-    }
-  }
 }
